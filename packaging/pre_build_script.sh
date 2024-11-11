@@ -1,3 +1,3 @@
 #!/bin/bash
 
-conda install libavif libheic -c conda-forge -yq
+conda install libavif libheif -c conda-forge -yq
