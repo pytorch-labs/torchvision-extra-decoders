@@ -9,6 +9,8 @@ dist/
 */**/*~
 *~
 
+torchvision_extra_decoders/version.py
+
 docs/build
 # sphinx-gallery
 docs/source/auto_examples/
