@@ -3,12 +3,14 @@
 # This software may be used and distributed according to the terms of the
 # GNU Lesser General Public License version 2.
 
-import sys
 import os
+import sys
 from pathlib import Path
+
 from setuptools import find_packages, setup
 
 from torch.utils.cpp_extension import BuildExtension, CppExtension
+
 
 def find_library(header):
     # returns (found, include dir, library dir)
@@ -44,17 +46,19 @@ def find_library(header):
 
 def make_extension():
 
-    heic_found, heic_include_dir, heic_library_dir = find_library(header="libheif/heif_cxx.h")
+    heic_found, heic_include_dir, heic_library_dir = find_library(
+        header="libheif/heif_cxx.h"
+    )
     if not heic_found:
         raise RuntimeError("Couldn't find libheic!")
-    
+
     print(f"{heic_include_dir = }")
     print(f"{heic_library_dir = }")
 
     avif_found, avif_include_dir, avif_library_dir = find_library(header="avif/avif.h")
     if not avif_found:
         raise RuntimeError("Couldn't find libavif!")
-    
+
     print(f"{heic_include_dir = }")
     print(f"{heic_library_dir = }")
 
@@ -69,6 +73,14 @@ def make_extension():
         libraries=["heif", "avif"],
         extra_compile_args={"cxx": ["-g0"]},
     )
+
+
+def get_requirements():
+    pytorch_dep = os.getenv("TORCH_PACKAGE_NAME", "torch")
+    if os.getenv("PYTORCH_VERSION"):
+        pytorch_dep += "==" + os.getenv("PYTORCH_VERSION")
+
+    return [pytorch_dep]
 
 
 if __name__ == "__main__":
@@ -91,7 +103,7 @@ if __name__ == "__main__":
         packages=find_packages(exclude=("test",)),
         package_data={PACKAGE_NAME: ["*.dll", "*.dylib", "*.so"]},
         zip_safe=False,
-        install_requires=[],
+        install_requires=get_requirements(),
         python_requires=">=3.9",
         ext_modules=[make_extension()],
         cmdclass={
