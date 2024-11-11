@@ -4,12 +4,42 @@
 # GNU Lesser General Public License version 2.
 
 import os
+import subprocess
 import sys
 from pathlib import Path
 
 from setuptools import find_packages, setup
 
 from torch.utils.cpp_extension import BuildExtension, CppExtension
+
+ROOT_DIR = Path(__file__).absolute().parent
+
+
+# Same version logic as in torchvision
+def get_and_write_version():
+    with open(ROOT_DIR / "version.txt") as f:
+        version = f.readline().strip()
+    sha = "Unknown"
+
+    try:
+        sha = (
+            subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=str(ROOT_DIR))
+            .decode("ascii")
+            .strip()
+        )
+    except Exception:
+        pass
+
+    if os.getenv("BUILD_VERSION"):
+        version = os.getenv("BUILD_VERSION")
+    elif sha != "Unknown":
+        version += "+" + sha[:7]
+
+    with open(ROOT_DIR / "torchvision_extra_decoders/version.py", "w") as f:
+        f.write(f"__version__ = '{version}'\n")
+        f.write(f"git_version = {repr(sha)}\n")
+
+    return version
 
 
 def find_library(header):
@@ -92,7 +122,7 @@ if __name__ == "__main__":
 
     setup(
         name=PACKAGE_NAME,
-        version="0.0.1.dev",
+        version=get_and_write_version(),
         author="PyTorch Team",
         author_email="packages@pytorch.org",
         url="TODO",

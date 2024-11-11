@@ -7,6 +7,11 @@ from pathlib import Path
 
 import torch
 
+try:
+    from .version import __version__  # noqa: F401
+except ImportError:
+    pass
+
 
 def expose_extra_decoders():
     suffix = ".so"  # TODO: make this cross-platform
