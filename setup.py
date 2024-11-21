@@ -35,6 +35,8 @@ def get_and_write_version():
     elif sha != "Unknown":
         version += "+" + sha[:7]
 
+    version = version.replace("+cpu", "")
+
     with open(ROOT_DIR / "torchvision_extra_decoders/version.py", "w") as f:
         f.write(f"__version__ = '{version}'\n")
         f.write(f"git_version = {repr(sha)}\n")
