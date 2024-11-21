@@ -108,11 +108,11 @@ def make_extension():
 
 
 def get_requirements():
-    pytorch_dep = os.getenv("TORCH_PACKAGE_NAME", "torch")
-    if os.getenv("PYTORCH_VERSION"):
-        pytorch_dep += "==" + os.getenv("PYTORCH_VERSION")
-
-    return [pytorch_dep]
+    if pytorch_dep := os.getenv("TORCH_PACKAGE_NAME"):
+        if os.getenv("PYTORCH_VERSION"):
+            pytorch_dep += "==" + os.getenv("PYTORCH_VERSION")
+            return [pytorch_dep]
+    return []
 
 
 if __name__ == "__main__":
