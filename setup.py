@@ -107,14 +107,6 @@ def make_extension():
     )
 
 
-def get_requirements():
-    pytorch_dep = os.getenv("TORCH_PACKAGE_NAME", "torch")
-    if os.getenv("PYTORCH_VERSION"):
-        pytorch_dep += "==" + os.getenv("PYTORCH_VERSION")
-
-    return [pytorch_dep]
-
-
 if __name__ == "__main__":
 
     with open("README.md") as f:
@@ -135,7 +127,7 @@ if __name__ == "__main__":
         packages=find_packages(exclude=("test",)),
         package_data={PACKAGE_NAME: ["*.dll", "*.dylib", "*.so"]},
         zip_safe=False,
-        install_requires=get_requirements(),
+        install_requires=[],
         python_requires=">=3.9",
         ext_modules=[make_extension()],
         cmdclass={
