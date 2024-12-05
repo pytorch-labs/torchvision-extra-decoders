@@ -7,7 +7,9 @@ wheel_path=`find dist -type f -name "*.whl"`
 
 echo Found $wheel_path
 
-echo $CONDA_PREFIX
+echo CONDA_PREFIX = $CONDA_PREFIX
+echo `ls $CONDA_PREFIX/lib`
+export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:$LD_LIBRARY_PATH"
 
 ${CONDA_RUN} auditwheel -v repair --plat manylinux_2_38_x86_64  $wheel_path  --exclude libtorch_python.so --exclude libc10.so --exclude libtorch.so --exclude libtorch_cpu.so --wheel-dir dist
 
