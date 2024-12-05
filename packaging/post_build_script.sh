@@ -12,7 +12,7 @@ echo Found $wheel_path
 # dir. Maybe it's enough to LD_LIBRARY_PATH $CONDA_PREFIX/lib but I fear this
 # might include some un-desired libc or libcxx so files?
 mkdir libs_to_bundle
-for f in `find $CONDA_PREFIX/lib | grep -e libavif.so -e libdav1d.so -e librav1e.so  -e libaom.so -e libheif.so -e libx265.so -e libde265.so`; do cp $f libs_to_bundle; done
+for f in `find $CONDA_PREFIX/lib | grep -e libavif.so -e libdav1d.so -e librav1e.so -e libSvtAv1Enc.so -e libaom.so -e libheif.so -e libx265.so -e libde265.so`; do cp $f libs_to_bundle; done
 echo `ls libs_to_bundle`
 export LD_LIBRARY_PATH="$PWD/libs_to_bundle:$LD_LIBRARY_PATH"
 
