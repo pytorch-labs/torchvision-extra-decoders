@@ -12,9 +12,8 @@
 
 namespace extra_decoders_ns {
 
-torch::Tensor decode_heic(
-    const torch::Tensor& encoded_data,
-    ImageReadMode mode) {
+torch::Tensor decode_heic(const torch::Tensor &encoded_data,
+                          ImageReadMode mode) {
   validate_encoded_data(encoded_data);
 
   auto return_rgb = true;
@@ -23,14 +22,14 @@ torch::Tensor decode_heic(
   int width = 0;
   int num_channels = 0;
   int stride = 0;
-  uint8_t* decoded_data = nullptr;
+  uint8_t *decoded_data = nullptr;
   heif::Image img;
   int bit_depth = 0;
 
   try {
     heif::Context ctx;
-    ctx.read_from_memory_without_copy(
-        encoded_data.data_ptr<uint8_t>(), encoded_data.numel());
+    ctx.read_from_memory_without_copy(encoded_data.data_ptr<uint8_t>(),
+                                      encoded_data.numel());
 
     // TODO properly error on (or support) image sequences. Right now, I think
     // this function will always return the first image in a sequence, which is
@@ -60,8 +59,7 @@ torch::Tensor decode_heic(
     bit_depth = handle.get_luma_bits_per_pixel();
 
     return_rgb =
-        should_this_return_rgb_or_rgba(
-            mode, handle.has_alpha_channel());
+        should_this_return_rgb_or_rgba(mode, handle.has_alpha_channel());
 
     height = handle.get_height();
     width = handle.get_width();
@@ -81,7 +79,7 @@ torch::Tensor decode_heic(
     img = handle.decode_image(heif_colorspace_RGB, chroma);
 
     decoded_data = img.get_plane(heif_channel_interleaved, &stride);
-  } catch (const heif::Error& err) {
+  } catch (const heif::Error &err) {
     // We need this try/catch block and call TORCH_CHECK, because libheif may
     // otherwise throw heif::Error that would just be reported as "An unknown
     // exception occurred" when we move back to Python.
@@ -91,7 +89,7 @@ torch::Tensor decode_heic(
 
   auto dtype = (bit_depth == 8) ? torch::kUInt8 : at::kUInt16;
   auto out = torch::empty({height, width, num_channels}, dtype);
-  uint8_t* out_ptr = (uint8_t*)out.data_ptr();
+  uint8_t *out_ptr = (uint8_t *)out.data_ptr();
 
   // decoded_data is *almost* the raw decoded data, but not quite: for some
   // images, there may be some padding at the end of each row, i.e. when stride
@@ -103,10 +101,8 @@ torch::Tensor decode_heic(
   // gets freed when it gets out of scope!
   auto row_size_in_bytes = width * num_channels * ((bit_depth == 8) ? 1 : 2);
   for (auto h = 0; h < height; h++) {
-    memcpy(
-        out_ptr + h * row_size_in_bytes,
-        decoded_data + h * stride,
-        row_size_in_bytes);
+    memcpy(out_ptr + h * row_size_in_bytes, decoded_data + h * stride,
+           row_size_in_bytes);
   }
   if (bit_depth > 8) {
     // Say bit depth is 10. decodec_data and out_ptr contain 10bits values
@@ -117,7 +113,7 @@ torch::Tensor decode_heic(
     // TODO: It's possible to avoid the memcpy call above in this case, and do
     // the copy at the same time as the conversation. Whether it's worth it
     // should be benchmarked.
-    auto out_ptr_16 = (uint16_t*)out_ptr;
+    auto out_ptr_16 = (uint16_t *)out_ptr;
     for (auto p = 0; p < height * width * num_channels; p++) {
       out_ptr_16[p] <<= (16 - bit_depth);
     }

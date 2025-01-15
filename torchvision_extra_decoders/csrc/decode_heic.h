@@ -5,11 +5,12 @@
 
 #pragma once
 
-#include <torch/torch.h>
 #include "common.h"
+#include <torch/torch.h>
 
 namespace extra_decoders_ns {
 
-C10_EXPORT torch::Tensor decode_heic(const torch::Tensor& encoded_data, ImageReadMode mode);
+C10_EXPORT torch::Tensor decode_heic(const torch::Tensor &encoded_data,
+                                     ImageReadMode mode);
 
 } // namespace extra_decoders_ns
