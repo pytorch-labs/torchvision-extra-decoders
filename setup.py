@@ -77,7 +77,6 @@ def find_library(header):
 
 
 def make_extension():
-
     heic_found, heic_include_dir, heic_library_dir = find_library(
         header="libheif/heif_cxx.h"
     )
@@ -108,7 +107,6 @@ def make_extension():
 
 
 if __name__ == "__main__":
-
     with open("README.md") as f:
         readme = f.read()
 
